@@ -1,0 +1,19 @@
+apiVersion: skaffold/v2beta27
+kind: Config
+build:
+  artifacts:
+    - image: app
+      docker:
+        dockerfile: Dockerfile
+deploy:
+  helm:
+    releases:
+      - name: app
+        chartPath: resources/app
+        artifactOverrides:
+          image: app
+portForward:
+  - resourceType: deployment
+    resourceName: app
+    namespace: default
+    port: 8080
