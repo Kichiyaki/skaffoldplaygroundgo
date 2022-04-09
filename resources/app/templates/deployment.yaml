@@ -17,5 +17,8 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .Values.image }}
+          env:
+            - name: DATABASE_DSN
+              value: postgres://postgres:skaffold@skaffolddb-postgresql:5432/skaffold?sslmode=disable
           ports:
             - containerPort: 8080

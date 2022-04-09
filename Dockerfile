@@ -1,6 +1,6 @@
 FROM golang:1.17 as builder
 WORKDIR /app
-COPY go.mod .
+COPY go.mod go.sum ./
 RUN go mod download
 COPY main.go .
 # `skaffold debug` sets SKAFFOLD_GO_GCFLAGS to disable compiler optimizations

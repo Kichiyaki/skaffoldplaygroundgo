@@ -2,19 +2,38 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/driver/pgdriver"
 )
 
 func main() {
+	defer func() {
+		log.Println("bye")
+	}()
 	log.Println("hello from Go")
+
+	db, err := newDB()
+	if err != nil {
+		log.Fatalln("newDB:", err)
+	}
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if err := db.Ping(); err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
 		_, _ = w.Write([]byte("skaffold"))
 	})
 
@@ -41,4 +60,16 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalln("srv.ListenAndServe:", err)
 	}
+}
+
+func newDB() (*bun.DB, error) {
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(os.Getenv("DATABASE_DSN"))))
+
+	db := bun.NewDB(sqldb, pgdialect.New())
+
+	if err := db.Ping(); err != nil {
+		return nil, fmt.Errorf("db.Ping: %w", err)
+	}
+
+	return db, nil
 }

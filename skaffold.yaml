@@ -8,6 +8,14 @@ build:
 deploy:
   helm:
     releases:
+      - name: skaffolddb
+        repo: https://charts.bitnami.com/bitnami
+        remoteChart: postgresql
+        version: 11.1.19
+        wait: true
+        setValues:
+          auth.postgresPassword: skaffold
+          auth.database: skaffold
       - name: app
         chartPath: resources/app
         artifactOverrides:
