@@ -1,4 +1,4 @@
-module github.com/Kichiyaki/skaffoldplayground
+module github.com/Kichiyaki/skaffoldplaygroundgo
 
 go 1.18
 
